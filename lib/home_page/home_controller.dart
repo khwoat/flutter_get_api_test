@@ -21,18 +21,20 @@ class HomeController extends GetxController {
 
   RxDouble convertValue = 0.0.obs;
 
+  http.Client client = http.Client();
+
   late final Timer? timer;
 
   @override
   void onInit() async {
     // Assign value for Rx type (First fetch)
-    currencyBTC = fetchData().obs;
+    currencyBTC = fetchData(client).obs;
     dropdownValue.value = (await currencyBTC.value).bpi.usd.code;
     await saveDataToSharedPreference(await currencyBTC.value);
     
     // Fetch and save data every 1 minute
     timer = Timer.periodic(const Duration(minutes: 1), (timer) async {
-      currencyBTC.value = fetchData();
+      currencyBTC.value = fetchData(client);
       await saveDataToSharedPreference(await currencyBTC.value);
     });
 
@@ -59,23 +61,23 @@ class HomeController extends GetxController {
       String json = jsonEncode(dataList);
       await sharedPreferences.setString("currency-data", json);
   }
-  
-  // Fetch currency data from API 
-  Future<CurrencyBTC> fetchData() async {
-    print("fetching data...");
-    String apiPath = "https://api.coindesk.com/v1/bpi/currentprice.json";
-    http.Response response =  await http.get(Uri.parse(apiPath));
-
-    // If status code is not 200, throw an error
-    if (response.statusCode == 200){
-      return CurrencyBTC.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception("Can not fetch data from $apiPath");
-    }
-  }
 
   void gotoHistoryPage() {
     Get.toNamed("/history");
   }
   
+}
+
+// Fetch currency data from API 
+Future<CurrencyBTC> fetchData(http.Client client) async {
+  print("fetching data...");
+  String apiPath = "https://api.coindesk.com/v1/bpi/currentprice.json";
+  http.Response response =  await client.get(Uri.parse(apiPath));
+
+  // If status code is not 200, throw an error
+  if (response.statusCode == 200){
+    return CurrencyBTC.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception("Can not fetch data from $apiPath");
+  }
 }
