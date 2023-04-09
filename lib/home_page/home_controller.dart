@@ -1,15 +1,25 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:neversitup_exam/_model/currency_btc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeController extends GetxController {
 
+  final TextEditingController textEditingController = TextEditingController();
+
+  final currencyFormat = NumberFormat("#,##0.0000", "en_US");
+
   late Rx<Future<CurrencyBTC>> currencyBTC;
+
+  RxString dropdownValue = "".obs;
+
+  RxDouble convertValue = 0.0.obs;
 
   late final Timer? timer;
 
@@ -17,6 +27,7 @@ class HomeController extends GetxController {
   void onInit() async {
     // Assign value for Rx type (First fetch)
     currencyBTC = fetchData().obs;
+    dropdownValue.value = (await currencyBTC.value).bpi.usd.code;
     await saveDataToSharedPreference(await currencyBTC.value);
     
     // Fetch and save data every 1 minute
@@ -36,9 +47,8 @@ class HomeController extends GetxController {
 
   // Save currency data to shared preference
   Future<void> saveDataToSharedPreference(CurrencyBTC currencyBTC) async {
-    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
     // Get data from sharedpreference and add new data
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? data = sharedPreferences.getString("currency-data");
       var dataList = {};
       if (data != null && data != "") {
