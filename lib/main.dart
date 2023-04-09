@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:neversitup_exam/history_page/history_binding.dart';
+import 'package:neversitup_exam/history_page/history_view.dart';
 import 'package:neversitup_exam/home_page/home_binding.dart';
 
 import 'home_page/home_view.dart';
@@ -25,7 +27,13 @@ void main() {
           name: "/",
           page: () => const HomeView(),
           binding: HomeBinding()
-        )
+        ),
+
+        GetPage(
+          name: "/history",
+          page: () => const HistoryView(),
+          binding: HistoryBinding()
+        ),
       ],
     )
   );

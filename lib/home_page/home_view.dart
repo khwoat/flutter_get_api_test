@@ -27,10 +27,44 @@ class HomeView extends GetView<HomeController> {
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
 
+                    // Time of latest update
+                    Row(
+                      children: [
+                        Text(
+                          "Updated: ",
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        Text(
+                          snapshot.data!.time.updated,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
                     // Show currency data of USD, GBP, and EUR
                     getEachCurrency(context, bpi.usd.code, bpi.usd.description, bpi.usd.rate),
                     getEachCurrency(context, bpi.gbp.code, bpi.gbp.description, bpi.gbp.rate),
                     getEachCurrency(context, bpi.eur.code, bpi.eur.description, bpi.eur.rate),
+
+                    Text(
+                      "*per 1 BTC.",
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // A button that click for Going to history of currency data page.
+                    ElevatedButton(
+                      onPressed: () => controller.gotoHistoryPage(),
+                      child: Text(
+                        "History",
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
 
                     Text(
                       snapshot.data!.disclaimer,
@@ -62,11 +96,11 @@ class HomeView extends GetView<HomeController> {
         Row(
           children: [
             Text("Rate: ", style: Theme.of(context).textTheme.headlineSmall),
-            Text(rate, style: Theme.of(context).textTheme.bodyLarge),
+            Text("$rate $code", style: Theme.of(context).textTheme.bodyLarge),
           ],
         ),
         
-        const SizedBox(height: 20),
+        const SizedBox(height: 15),
       ],
     );
   }
